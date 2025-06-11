@@ -1,7 +1,7 @@
 <script setup>
 import { findNewAPI } from '@/apis/home';
 import HomePanel from './HomePanel.vue';
-import { onMounted, ref } from 'vue';
+import { ref } from 'vue';
 
 //
 const newList = ref([])
@@ -11,9 +11,8 @@ const getNewList = async () => {
   newList.value = res.result
 }
 
-onMounted(() => {
-  getNewList()
-})
+getNewList()
+
 </script>
 
 <template>
