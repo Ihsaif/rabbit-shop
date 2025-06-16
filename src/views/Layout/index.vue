@@ -8,9 +8,9 @@ import LayoutFixed from './components/LayoutFixed.vue';
 import { useCategoryStore } from '@/stores/category';
 import { onMounted } from 'vue';
 
-const categoryStore=useCategoryStore()
+const categoryStore = useCategoryStore()
 
-onMounted(()=>categoryStore.getCategory())
+onMounted(() => categoryStore.getCategory())
 </script>
 <template>
   <div>
@@ -18,6 +18,8 @@ onMounted(()=>categoryStore.getCategory())
     <LayoutNav />
     <LayoutHeader />
     <!-- 二级路由出口 -->
+    <!-- 添加key 破坏复用机制 强制销毁重建 -->
+    <!-- <RouterView :key="$route.fullPath" /> -->
     <RouterView />
     <LayoutFooter />
   </div>
