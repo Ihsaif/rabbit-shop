@@ -1,7 +1,22 @@
 <script setup>
 import { getHotGoodsAPI } from '@/apis/detail'
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
+
+// 定义组件的props
+const props = defineProps({
+  hotType: {
+    type: Number,
+    default: 1 // 1: 24小时热销榜  2: 代表周热销榜
+  }
+})
+
+// 定义标题映射
+const TITLEMAP = {
+  1: '24小时热榜',
+  2: '周热榜',
+}
+const title = computed(() => TITLEMAP[props.hotType])
 
 // 获取热销商品数据
 const hotGoodsList = ref([])
@@ -9,7 +24,7 @@ const route = useRoute()
 const getHotGoods = async () => {
   const res = await getHotGoodsAPI({
     id: route.params.id,// 商品id
-    type: 1 // 1: 热销商品
+    type: props.hotType // 1: 24小时热销榜  2: 代表周热销榜
   })
   hotGoodsList.value = res.result
 }
@@ -22,7 +37,7 @@ onMounted(() => {
 
 <template>
   <div class="goods-hot">
-    <h3>周日榜单</h3>
+    <h3>{{ title }}</h3>
     <!-- 商品区块 -->
     <RouterLink to="/" class="goods-item" v-for="item in hotGoodsList" :key="item.id">
       <img :src="item.picture" alt="" />
