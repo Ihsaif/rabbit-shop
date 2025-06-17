@@ -27,6 +27,10 @@ const { elementX, elementY, isOutside } = useMouseInElement(target)
 //控制滑块跟随控制滑块跟随鼠标移动（监听elementX/Y变化，一旦变化 重新设置left/top）
 const left = ref(0);
 const top = ref(0);
+
+const positionX = ref(0);
+const positionY = ref(0);
+
 watch([elementX, elementY, isOutside], () => {
   // console.log('X,Y变化了', elementX, elementY);
   if (isOutside.value) return; // 鼠标移出时不更新滑块位置
@@ -45,8 +49,11 @@ watch([elementX, elementY, isOutside], () => {
 
   if (elementY.value > 300) { top.value = 200 }
   if (elementY.value < 100) { top.value = 0 }
-});
 
+  // 控制放大镜大图的显示位置
+  positionX.value = -left.value * 2; // 放大镜大图的背景位置
+  positionY.value = -top.value * 2; // 放大镜大图的背景位置
+});
 </script>
 
 <template>
@@ -66,11 +73,11 @@ watch([elementX, elementY, isOutside], () => {
     <!-- 放大镜大图 -->
     <div class="large" :style="[
       {
-        backgroundImage: `url(${imageList[0]})`,
-        backgroundPositionX: `0px`,
-        backgroundPositionY: `0px`,
+        backgroundImage: `url(${imageList[activeIndex]})`,
+        backgroundPositionX: `${positionX}px`,
+        backgroundPositionY: `${positionY}px`,
       },
-    ]" v-show="false"></div>
+    ]" v-show="!isOutside"></div>
   </div>
 </template>
 
