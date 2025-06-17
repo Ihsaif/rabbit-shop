@@ -1,6 +1,8 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup>
-import { ref } from 'vue';
+import { useMouseInElement } from '@vueuse/core';
+import { ref, watch } from 'vue';
+
 
 // 图片列表
 const imageList = [
@@ -16,13 +18,36 @@ const activeIndex = ref(0);
 
 const enterhandle = (index) => {
   activeIndex.value = index;
-  // 更新大图的背景图
-  /* const largeDiv = document.querySelector('.large');
-  largeDiv.style.backgroundImage = `url(${imageList[index]})`; */
 }
 
-</script>
+//获取鼠标相对位置
+const target = ref(null);
+const { elementX, elementY, isOutside } = useMouseInElement(target)
 
+//控制滑块跟随控制滑块跟随鼠标移动（监听elementX/Y变化，一旦变化 重新设置left/top）
+const left = ref(0);
+const top = ref(0);
+watch([elementX, elementY, isOutside], () => {
+  // console.log('X,Y变化了', elementX, elementY);
+  if (isOutside.value) return; // 鼠标移出时不更新滑块位置
+  // 如果鼠标移出图片区域，滑块不动
+  //横向
+  if (elementX.value > 100 && elementX.value < 300) {
+    left.value = elementX.value - 100; // 200px的滑块，left从0开始
+  }
+  //纵向
+  if (elementY.value > 100 && elementY.value < 300) {
+    top.value = elementY.value - 100; // 200px的滑块，top从0开始
+  }
+  // 处理边界
+  if (elementX.value > 300) { left.value = 200 }
+  if (elementX.value < 100) { left.value = 0 }
+
+  if (elementY.value > 300) { top.value = 200 }
+  if (elementY.value < 100) { top.value = 0 }
+});
+
+</script>
 
 <template>
   <div class="goods-image">
@@ -30,7 +55,7 @@ const enterhandle = (index) => {
     <div class="middle" ref="target">
       <img :src="imageList[activeIndex]" alt="" />
       <!-- 蒙层小滑块 -->
-      <div class="layer" :style="{ left: `0px`, top: `0px` }"></div>
+      <div class="layer" v-show="!isOutside" :style="{ left: `${left}px`, top: `${top}px` }"></div>
     </div>
     <!-- 小图列表 -->
     <ul class="small">
@@ -80,10 +105,9 @@ const enterhandle = (index) => {
     width: 200px;
     height: 200px;
     background: rgba(0, 0, 0, 0.2);
-    // 绝对定位 然后跟随咱们鼠标控制left和top属性就可以让滑块移动起来
+    position: absolute;
     left: 0;
     top: 0;
-    position: absolute;
   }
 
   .small {
