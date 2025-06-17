@@ -36,6 +36,12 @@ onMounted(() => {
   getGoodsList()
 })
 
+// 监听tab切换
+const tabChange = () => {
+  // console.log('tap-change', reqData.value.sortField);
+  reqData.value.page = 1; // 重置页码
+  getGoodsList();
+}
 </script>
 
 <template>
@@ -50,7 +56,7 @@ onMounted(() => {
       </el-breadcrumb>
     </div>
     <div class="sub-container">
-      <el-tabs>
+      <el-tabs v-model="reqData.sortField" @tab-change="tabChange">
         <el-tab-pane label="最新商品" name="publishTime"></el-tab-pane>
         <el-tab-pane label="最高人气" name="orderNum"></el-tab-pane>
         <el-tab-pane label="评论最多" name="evaluateNum"></el-tab-pane>
